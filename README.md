@@ -18,7 +18,7 @@
 
 3. The game should be hosted by a Docker container, which when running listens on the HTTP/HTTPS ports.
 
-4. The game's back-end code, running in the container, should be Python 3.
+4. The game's back-end code, running in the container, should be Python 3, using FastAPI for the web framework with FastAPI's built-in SessionMiddleware for signed cookie-based session management. FastAPI's StaticFiles should be used to serve frontend assets and cached images. Card images should be downloaded from S3 to a local cache on application startup for better performance.
 
 5. The game's front-end code, running in the player's browser, should use Tailwind for CSS. It needs to be mobile-friendly (work in a phone-sized form factor).
 
