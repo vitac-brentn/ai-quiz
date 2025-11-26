@@ -30,15 +30,26 @@ def test_health_check(client: TestClient) -> None:
 
 def test_health_check_no_cards() -> None:
     """Test health check when cards not loaded."""
-    client = TestClient(app)
-    # Don't set app.state.cards
+    # Save original state if exists
+    had_cards = hasattr(app.state, "cards")
+    original_cards = getattr(app.state, "cards", None)
 
-    response = client.get("/health")
+    # Remove cards from state
+    if hasattr(app.state, "cards"):
+        delattr(app.state, "cards")
 
-    assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "healthy"
-    assert data["cards_loaded"] is False
+    try:
+        client = TestClient(app)
+        response = client.get("/health")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert data["cards_loaded"] is False
+    finally:
+        # Restore original state
+        if had_cards:
+            app.state.cards = original_cards
 
 
 def test_get_total_cards(client: TestClient, sample_cards: List[Card]) -> None:

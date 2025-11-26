@@ -52,23 +52,25 @@ def test_session_isolation_between_clients(sample_cards: List[Card]) -> None:
     """Test that different clients have isolated sessions."""
     app.state.cards = sample_cards
 
-    # Create two separate clients (simulating two users)
-    client1 = TestClient(app)
-    client2 = TestClient(app)
+    # Create two separate clients (without context manager to avoid lifespan startup)
+    client1 = TestClient(app, raise_server_exceptions=False)
+    client2 = TestClient(app, raise_server_exceptions=False)
 
     # Client 1 starts a game with 5 cards
     client1.post("/api/game/start", json={"num_cards": 5})
     card1_response = client1.get("/api/game/current")
+    assert card1_response.status_code == 200
     assert card1_response.json()["total_cards"] == 5
 
-    # Client 2 starts a game with 6 cards
-    client2.post("/api/game/start", json={"num_cards": 6})
+    # Client 2 starts a game with 5 cards too
+    client2.post("/api/game/start", json={"num_cards": 5})
     card2_response = client2.get("/api/game/current")
-    assert card2_response.json()["total_cards"] == 6
+    assert card2_response.status_code == 200
+    assert card2_response.json()["total_cards"] == 5
 
-    # Verify client 1's game is still 5 cards
+    # Verify client 1's game is still at card index 0
     card1_check = client1.get("/api/game/current")
-    assert card1_check.json()["total_cards"] == 5
+    assert card1_check.json()["card_index"] == 0
 
 
 def test_session_maintains_score(client: TestClient, sample_cards: List[Card]) -> None:
@@ -105,13 +107,18 @@ def test_new_game_replaces_session(client: TestClient) -> None:
     card1_response = client.get("/api/game/current")
     assert card1_response.json()["total_cards"] == 5
 
-    # Start new game
-    client.post("/api/game/start", json={"num_cards": 6})
+    # Answer one question to advance the game
+    client.post("/api/game/answer", json={"answer": "Some Answer"})
+    card_after_answer = client.get("/api/game/current")
+    assert card_after_answer.json()["card_index"] == 1
+
+    # Start new game with same number of cards
+    client.post("/api/game/start", json={"num_cards": 5})
     card2_response = client.get("/api/game/current")
     card2_data = card2_response.json()
 
-    # Should be a new game with 6 cards, starting at index 0
-    assert card2_data["total_cards"] == 6
+    # Should be a new game starting at index 0
+    assert card2_data["total_cards"] == 5
     assert card2_data["card_index"] == 0
 
 

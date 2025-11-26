@@ -1,8 +1,10 @@
 """Game logic service for quiz game."""
 
+from __future__ import annotations
+
 import random
 import logging
-from typing import List
+from typing import List, Tuple
 
 from app.models.card import Card, CardWithChoices
 from app.models.game import GameSession

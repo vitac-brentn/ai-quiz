@@ -1,8 +1,10 @@
 """Main FastAPI application for quiz game."""
 
+from __future__ import annotations
+
 import logging
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Dict
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -103,7 +105,7 @@ app.mount("/images", StaticFiles(directory=settings.cache_dir), name="images")
 
 
 @app.get("/", tags=["root"])
-def read_root() -> dict[str, str]:
+def read_root() -> Dict[str, str]:
     """Root endpoint - redirects to API docs."""
     return {
         "message": "Quiz Game API",

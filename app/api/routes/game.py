@@ -1,5 +1,7 @@
 """Game API endpoints."""
 
+from __future__ import annotations
+
 import logging
 from typing import Dict
 from fastapi import APIRouter, Request, HTTPException, status

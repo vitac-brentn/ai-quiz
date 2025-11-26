@@ -243,3 +243,27 @@ def test_get_game_results_game_not_complete(
 
     with pytest.raises(ValueError, match="not complete"):
         game_service.get_game_results(session)
+
+
+def test_get_current_card_card_not_found(
+    game_service: GameService, sample_cards: List[Card]
+) -> None:
+    """Test error when card ID in session doesn't exist in cards list."""
+    session = game_service.create_game_session(5, sample_cards)
+    # Modify session to have an invalid card ID
+    session.cards[0] = 99999  # Non-existent ID
+
+    with pytest.raises(ValueError, match="not found"):
+        game_service.get_current_card_with_choices(session, sample_cards)
+
+
+def test_submit_answer_card_not_found(
+    game_service: GameService, sample_cards: List[Card]
+) -> None:
+    """Test error when card ID in session doesn't exist when submitting answer."""
+    session = game_service.create_game_session(5, sample_cards)
+    # Modify session to have an invalid card ID
+    session.cards[0] = 99999  # Non-existent ID
+
+    with pytest.raises(ValueError, match="not found"):
+        game_service.submit_answer(session, "Some Answer", sample_cards)

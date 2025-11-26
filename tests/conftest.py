@@ -1,8 +1,23 @@
 """Pytest fixtures for quiz game tests."""
 
+import os
+from pathlib import Path
+
+# Set environment variables BEFORE any app imports
+os.environ.setdefault("AWS_ACCESS_KEY_ID", "test_access_key")
+os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "test_secret_key")
+os.environ.setdefault("AWS_REGION", "us-east-1")
+os.environ.setdefault("S3_BUCKET_NAME", "test-bucket")
+os.environ.setdefault("S3_CARDS_JSON_KEY", "cards.json")
+os.environ.setdefault("SESSION_SECRET_KEY", "test-secret-key-minimum-32-characters-long")
+os.environ.setdefault("CACHE_DIR", "/tmp/test-cache")
+os.environ.setdefault("ENVIRONMENT", "test")
+
+# Create cache directory before importing app
+Path("/tmp/test-cache").mkdir(parents=True, exist_ok=True)
+
 import pytest
 from typing import List, Generator
-from pathlib import Path
 import tempfile
 import shutil
 

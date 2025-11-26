@@ -71,3 +71,17 @@ def test_get_cache_dir(temp_cache_dir: Path) -> None:
 
     assert cache_dir == temp_cache_dir
     assert isinstance(cache_dir, Path)
+
+
+def test_initialize_cache_oserror(temp_cache_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test initialize_cache raises OSError when directory creation fails."""
+    cache_service = CacheService(str(temp_cache_dir / "invalid"))
+
+    # Mock Path.mkdir to raise OSError
+    def mock_mkdir(*args, **kwargs):
+        raise OSError("Permission denied")
+
+    monkeypatch.setattr(Path, "mkdir", mock_mkdir)
+
+    with pytest.raises(OSError, match="Permission denied"):
+        cache_service.initialize_cache()

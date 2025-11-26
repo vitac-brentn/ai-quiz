@@ -44,6 +44,12 @@ def test_settings_custom_host_port(mock_env_vars: None, monkeypatch: pytest.Monk
 
 def test_settings_missing_required_field(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test Settings raises error when required field is missing."""
+    # Clear all environment variables set by conftest.py
+    monkeypatch.delenv("AWS_ACCESS_KEY_ID", raising=False)
+    monkeypatch.delenv("AWS_SECRET_ACCESS_KEY", raising=False)
+    monkeypatch.delenv("S3_BUCKET_NAME", raising=False)
+    monkeypatch.delenv("SESSION_SECRET_KEY", raising=False)
+
     # Only set some required fields, leave others missing
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test_key")
     # Don't set AWS_SECRET_ACCESS_KEY

@@ -67,7 +67,8 @@ def test_start_game_sets_session_cookie(client: TestClient) -> None:
     """Test that starting a game sets session cookie."""
     response = client.post("/api/game/start", json={"num_cards": 5})
 
-    assert "quiz_session" in response.cookies
+    # Unit tests use default SessionMiddleware which uses "session" cookie name
+    assert "session" in response.cookies
 
 
 def test_start_game_too_few_cards(client: TestClient) -> None:

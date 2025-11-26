@@ -1,13 +1,15 @@
 """Health check endpoint."""
 
+from __future__ import annotations
+
 from fastapi import APIRouter, Request
-from typing import Dict
+from typing import Any, Dict
 
 router = APIRouter()
 
 
 @router.get("/health", tags=["health"])
-def health_check(request: Request) -> Dict[str, any]:
+def health_check(request: Request) -> Dict[str, Any]:
     """
     Health check endpoint.
 
